@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopSafe - Smart Expiry Tracker</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Ensure hide for dashboard elements if they leak */
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <i class="ph ph-bell-ringing"></i>
+      <span>ShopSafe</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+    </ul>
+    <div class="nav-cta" style="display: flex; align-items: center;">
+      <button class="btn-icon" id="theme-toggle" title="Toggle Dark/Light Theme" style="margin-right: 1rem;"><i
+          class="ph ph-moon"></i></button>
+      <a href="dashboard.html" class="btn btn-primary" id="get-started">Open Dashboard <i
+          class="ph ph-arrow-right"></i></a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero" id="hero">
+    <div class="hero-content reveal">
+      <div class="badge">🚀 The Ultimate Expiry Tracker</div>
+      <h1>Never Miss an <span>Expiry Date</span> Again.</h1>
+      <p>Keep track of your products, medicines, and groceries effortlessly. Get smart alerts before they become
+        unusable, save money, and reduce wastage. <b>No login required.</b></p>
+      <div class="hero-buttons">
+        <a href="dashboard.html" class="btn btn-primary btn-large">Start Tracking Now <i
+            class="ph ph-arrow-right"></i></a>
+        <a href="#about" class="btn btn-secondary btn-large">Learn More</a>
+      </div>
+    </div>
+    <div class="hero-illustration reveal">
+      <!-- Animated illustration structure -->
+      <div class="glass-card main-card">
+        <div class="card-header">
+          <i class="ph ph-calendar-check"></i> Recent Items
+        </div>
+        <div class="item-list">
+          <div class="item">
+            <div class="icon bg-red"><i class="ph ph-first-aid"></i></div>
+            <div class="details"><span>Aspirin</span> <small>Expires Tomorrow</small></div>
+            <div class="status red">1 Day</div>
+          </div>
+          <div class="item">
+            <div class="icon bg-yellow"><i class="ph ph-milk"></i></div>
+            <div class="details"><span>Fresh Milk</span> <small>Expires Soon</small></div>
+            <div class="status yellow">4 Days</div>
+          </div>
+          <div class="item">
+            <div class="icon bg-green"><i class="ph ph-apple-podcasts"></i></div>
+            <div class="details"><span>Apples</span> <small>Safe</small></div>
+            <div class="status green">12 Days</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Element -->
+      <div class="floating-alert bounce">
+        <div class="notification-bell">
+          <i class="ph-fill ph-bell"></i>
+          <span class="pulse-ring"></span>
+        </div>
+        <div class="alert-content">
+          <strong>Alert: Aspirin</strong>
+          <span>Expiring in 24 hours!</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- About Section -->
+  <section class="about" id="about">
+    <div class="section-title reveal">
+      <h2>Why Expiry Tracking Matters</h2>
+      <p>Expired products lead to health risks, wasted food, and lost money. Our system handles it all so you don't have
+        to worry.</p>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-card reveal">
+        <i class="ph-fill ph-warning-circle text-red"></i>
+        <h3>Health Risks</h3>
+        <p>Using expired medicines or eating spoiled food can have serious consequences. We notify you beforehand.</p>
+      </div>
+      <div class="about-card reveal" style="transition-delay: 100ms">
+        <i class="ph-fill ph-trash text-yellow"></i>
+        <h3>Waste Reduction</h3>
+        <p>Millions of tons of perfectly good food are thrown away daily. Keep track to use items before they go bad.
+        </p>
+      </div>
+      <div class="about-card reveal" style="transition-delay: 200ms">
+        <i class="ph-fill ph-piggy-bank text-green"></i>
+        <h3>Save Money</h3>
+        <p>Stop buying things you already have that went to waste. Know your stock and use it efficiently.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="section-title reveal">
+      <h2>Powerful Features</h2>
+      <p>Everything you need to manage your items effectively and safely.</p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card reveal hover-lift">
+        <div class="icon-wrap"><i class="ph ph-plus-circle"></i></div>
+        <h3>Auto Storage</h3>
+        <p>No login needed. Your data is automatically and securely stored directly on your device.</p>
+      </div>
+      <div class="feature-card reveal hover-lift" style="transition-delay: 100ms">
+        <div class="icon-wrap"><i class="ph ph-brain"></i></div>
+        <h3>Smart Detection</h3>
+        <p>Our system automatically calculates remaining days accurately.</p>
+      </div>
+      <div class="feature-card reveal hover-lift" style="transition-delay: 200ms">
+        <div class="icon-wrap"><i class="ph ph-barcode"></i></div>
+        <h3>Barcode Scanning</h3>
+        <p>Scan items with your camera to fetch details automatically from the cloud.</p>
+      </div>
+      <div class="feature-card reveal hover-lift" style="transition-delay: 300ms">
+        <div class="icon-wrap"><i class="ph ph-squares-four"></i></div>
+        <h3>Dashboard Overview</h3>
+        <p>A clean, bird's-eye view of your entire inventory status.</p>
+      </div>
+      <div class="feature-card reveal hover-lift" style="transition-delay: 400ms">
+        <div class="icon-wrap"><i class="ph ph-funnel"></i></div>
+        <h3>Category Sorting</h3>
+        <p>Filter by Medicines, Food, Cosmetics, and Custom Categories.</p>
+      </div>
+      <div class="feature-card reveal hover-lift" style="transition-delay: 500ms">
+        <div class="icon-wrap"><i class="ph ph-magic-wand"></i></div>
+        <h3>AI Recommendation</h3>
+        <p>Smart insights suggesting what to consume first to prevent waste.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Sections -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="section-title reveal">
+      <h2>How It Works</h2>
+      <p>A seamless process from adding a product to getting notified.</p>
+    </div>
+
+    <div class="timeline reveal">
+      <div class="step">
+        <div class="step-icon">1</div>
+        <h4>Add Product</h4>
+        <p>Scan barcode or add manually</p>
+      </div>
+      <div class="connector">
+        <div class="line"></div>
+      </div>
+      <div class="step">
+        <div class="step-icon">2</div>
+        <h4>Auto Saved</h4>
+        <p>Saved instantly to your device</p>
+      </div>
+      <div class="connector">
+        <div class="line"></div>
+      </div>
+      <div class="step">
+        <div class="step-icon">3</div>
+        <h4>Monitoring</h4>
+        <p>Whenever you open the app</p>
+      </div>
+      <div class="connector">
+        <div class="line"></div>
+      </div>
+      <div class="step">
+        <div class="step-icon">4</div>
+        <h4>Alert Sent</h4>
+        <p>You’re notified right on time!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Section -->
+  <section class="benefits">
+    <div class="benefits-container reveal glass-panel">
+      <h2>The ShopSafe Advantage</h2>
+      <div class="benefits-list">
+        <div class="benefit-item">
+          <i class="ph-fill ph-leaf"></i>
+          <div>
+            <h4>Reduce Wastage</h4>
+            <p>Contribute to a greener planet.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <i class="ph-fill ph-shield-check"></i>
+          <div>
+            <h4>Improve Safety</h4>
+            <p>Avoid harmful expired products.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <i class="ph-fill ph-wallet"></i>
+          <div>
+            <h4>Save Money</h4>
+            <p>Stop rebuying what you already own.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Future Scope Section -->
+  <section class="future-scope reveal">
+    <div class="section-title">
+      <h2>What's Next?</h2>
+      <p>We are constantly innovating to bring you smarter features.</p>
+    </div>
+    <div class="future-grid">
+      <div class="future-item">
+        <i class="ph ph-robot"></i>
+        <span>AI-Based Engine</span>
+      </div>
+      <div class="future-item">
+        <i class="ph ph-receipt"></i>
+        <span>Receipt Scanning</span>
+      </div>
+      <div class="future-item">
+        <i class="ph ph-device-mobile"></i>
+        <span>Mobile App</span>
+      </div>
+      <div class="future-item">
+        <i class="ph ph-users"></i>
+        <span>Family Sync</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="logo">
+          <i class="ph ph-bell-ringing"></i>
+          <span>ShopSafe</span>
+        </div>
+        <p>Smart Expiry Management Platform to keep you healthy, wealthy, and secure.</p>
+        <!--  <div class="social-icons">
+          <a href="#"><i class="ph-fill ph-twitter-logo"></i></a>
+          <a href="#"><i class="ph-fill ph-instagram-logo"></i></a>
+          <a href="#"><i class="ph-fill ph-linkedin-logo"></i></a>
+        </div> -->
+        <footer>
+      </div>
+
+      <div class="footer-links">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="#">Pricing</a>
+      </div>
+
+      <div class="footer-links">
+        <h4>Resources</h4>
+        <a href="#">Help Center</a>
+        <a href="#">Blog</a>
+        <a href="#">Security</a>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Contact Us</h4>
+        <p><i class="ph ph-envelope"></i> info@shopsafe.com</p>
+        <p><i class="ph ph-phone"></i> +91 9495734676</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 ShopSafe Expiry Tracker. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="theme.js"></script>
+  <script src="landing.js"></script>
+</body>
+
+</html

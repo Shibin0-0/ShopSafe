@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ShopSafe</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- HTML5 Qrcode for Barcode Scanning -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body style="background: var(--bg-main); overflow-y: hidden;">
+
+    <!-- Live Dashboard Application -->
+    <section class="dashboard-preview" id="dashboard" style="padding: 0; min-height: 100vh;">
+        <div class="dashboard-wrapper" style="height: 100vh; border-radius: 0; border: none; box-shadow: none;">
+
+            <!-- Sidebar -->
+            <aside class="dash-sidebar">
+                <a href="index.html" class="dash-logo" style="text-decoration: none; display: flex;"><i
+                        class="ph-fill ph-bell-ringing"></i> ShopSafe</a>
+                <ul class="dash-nav">
+                    <li id="nav-overview" class="active" onclick="switchTab('overview')"><i
+                            class="ph ph-squares-four"></i> Overview</li>
+                    <li id="nav-inventory" onclick="switchTab('inventory')"><i class="ph ph-list-bullets"></i> My
+                        Inventory</li>
+                    <li id="nav-add-item" onclick="switchTab('add-item')"><i class="ph ph-plus"></i> Add New Item</li>
+                    <li id="nav-catalog" onclick="switchTab('catalog')"><i class="ph ph-notebook"></i> Product Catalog
+                    </li>
+                    <li id="nav-analytics" onclick="switchTab('analytics')"><i class="ph ph-chart-bar"></i> Analytics
+                    </li>
+                    <li id="nav-ai-warnings" onclick="switchTab('ai-warnings')"><i class="ph ph-robot"></i> AI Warnings
+                    </li>
+                    <li id="nav-search-results" style="display: none;" onclick="switchTab('search-results')"><i
+                            class="ph ph-magnifying-glass"></i> Search Results
+                    </li>
+                    <li id="nav-settings" onclick="switchTab('settings')"><i class="ph ph-gear"></i> Settings</li>
+                    <li onclick="window.location.href='index.html'"><i class="ph ph-house"></i> Home Page</li>
+                </ul>
+            </aside>
+
+            <!-- Main Content -->
+            <div class="dash-main">
+                <!-- ... existing header and stats ... -->
+                <header class="dash-header">
+                    <h2>Dashboard</h2>
+                    <div class="dash-actions">
+                        <div class="search-bar" style="position: relative;">
+                            <i class="ph ph-magnifying-glass"></i>
+                            <input type="text" placeholder="Search products...">
+                            <div id="global-search-suggestions" class="suggestions-dropdown"></div>
+                        </div>
+                        <button class="btn-icon" id="theme-toggle" title="Toggle Dark/Light Theme"
+                            style="margin-right: 0.5rem;"><i class="ph ph-moon"></i></button>
+                        <div class="notification-wrapper" style="position: relative;">
+                            <button class="btn-icon" id="simulate-alert"><i class="ph ph-bell"></i></button>
+                            <span class="notification-badge" id="notification-badge"
+                                style="display: none; position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; align-items: center; justify-content: center; font-weight: bold;">0</span>
+                            <div class="notification-dropdown glass-panel" id="notification-dropdown"
+                                style="display: none; position: absolute; top: 120%; right: 0; width: 320px; z-index: 100; padding: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px;">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                    <h4 style="margin: 0; color: var(--text-dark);">Notifications</h4>
+                                    <span style="font-size: 0.8125rem; color: var(--primary-color); cursor: pointer;"
+                                        onclick="switchTab('ai-warnings'); document.getElementById('notification-dropdown').style.display='none';">View
+                                        All</span>
+                                </div>
+                                <div id="notification-list"
+                                    style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+                                    <div style="font-size: 0.875rem; color: var(--text-muted); padding: 0.5rem 0;">No
+                                        new notifications</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Stats -->
+                <div class="dash-stats">
+                    <div class="stat-card safe-stat">
+                        <div class="stat-icon"><i class="ph ph-check-circle"></i></div>
+                        <div class="stat-info">
+                            <span class="label">Safe Items</span>
+                            <span class="value counter" data-target="0">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card warning-stat">
+                        <div class="stat-icon"><i class="ph ph-warning-circle"></i></div>
+                        <div class="stat-info">
+                            <span class="label">Expiring Soon</span>
+                            <span class="value counter" data-target="0">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card danger-stat">
+                        <div class="stat-icon"><i class="ph ph-x-circle"></i></div>
+                        <div class="stat-info">
+                            <span class="label">Expired</span>
+                            <span class="value counter" data-target="0">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category & Sorting Controls (Only visible in Inventory) -->
+                <div id="inventory-controls" style="display: none; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                    <div class="filter-pill active" data-filter="All">All</div>
+                    <div class="filter-pill" data-filter="Food">Food</div>
+                    <div class="filter-pill" data-filter="Snacks">Snacks</div>
+                    <div class="filter-pill" data-filter="Beverage">Beverage</div>
+                    <div class="filter-pill" data-filter="Dairy">Dairy</div>
+                    <div class="filter-pill" data-filter="Grocery">Grocery</div>
+                    <div class="filter-pill" data-filter="Frozen">Frozen</div>
+                    <div class="filter-pill" data-filter="Baking">Baking</div>
+                    <div class="filter-pill" data-filter="Dessert">Dessert</div>
+                    <div class="filter-pill" data-filter="Dry Fruits">Dry Fruits</div>
+                    <div class="filter-pill" data-filter="Health">Health</div>
+                    <div class="filter-pill" data-filter="Condiment">Condiment</div>
+                    <div class="filter-pill" data-filter="Breakfast">Breakfast</div>
+                    <div class="filter-pill" data-filter="Confectionery">Confectionery</div>
+                    <div class="filter-pill" data-filter="Other">Other</div>
+                    <div style="margin-left: auto;">
+                        <div class="custom-dropdown" id="sort-dropdown">
+                            <button class="dropdown-trigger" id="sort-trigger">
+                                <i class="ph ph-sort-ascending"></i>
+                                <span id="sort-label">Added Date (Newest)</span>
+                                <i class="ph ph-caret-down" style="margin-left: 0.25rem;"></i>
+                            </button>
+                            <div class="dropdown-menu" id="sort-menu">
+                                <div class="dropdown-item selected" data-sort="date_desc">Added Date (Newest)</div>
+                                <div class="dropdown-item" data-sort="date_asc">Added Date (Oldest)</div>
+                                <div class="dropdown-item" data-sort="expiry_asc">Expiry Date (Soonest)</div>
+                                <div class="dropdown-item" data-sort="expiry_desc">Expiry Date (Latest)</div>
+                                <div class="dropdown-item" data-sort="name_asc">Name (A-Z)</div>
+                                <div class="dropdown-item" data-sort="name_desc">Name (Z-A)</div>
+                                <div class="dropdown-item" data-sort="mfg_asc">Manufacturer (A-Z)</div>
+                                <div class="dropdown-item" data-sort="mfg_desc">Manufacturer (Z-A)</div>
+                                <div class="dropdown-item" data-sort="qty_asc">Quantity (Low-High)</div>
+                                <div class="dropdown-item" data-sort="qty_desc">Quantity (High-Low)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Overview Section (Navigation Hub) -->
+                <div id="overview-section" class="dash-hub" style="position: relative;">
+                    <div class="hub-card" onclick="switchTab('inventory')">
+                        <div class="hub-icon"><i class="ph-duotone ph-list-bullets"></i></div>
+                        <h3>My Inventory</h3>
+                        <p>View and manage all your tracked items and their expiry status.</p>
+                        <span class="hub-link">Go to Inventory <i class="ph ph-arrow-right"></i></span>
+                    </div>
+                    <div class="hub-card" onclick="switchTab('add-item')">
+                        <div class="hub-icon"><i class="ph-duotone ph-plus-circle"></i></div>
+                        <h3>Add New Item</h3>
+                        <p>Quickly add fresh items to your inventory manually or via barcode.</p>
+                        <span class="hub-link">Add Product <i class="ph ph-arrow-right"></i></span>
+                    </div>
+                    <div class="hub-card" onclick="switchTab('catalog')">
+                        <div class="hub-icon"><i class="ph-duotone ph-notebook"></i></div>
+                        <h3>Product Catalog</h3>
+                        <p>Configure templates and manufacturers for smarter item entry.</p>
+                        <span class="hub-link">Open Catalog <i class="ph ph-arrow-right"></i></span>
+                    </div>
+                    <div class="hub-card" onclick="switchTab('analytics')">
+                        <div class="hub-icon"><i class="ph-duotone ph-chart-bar"></i></div>
+                        <h3>Analytics</h3>
+                        <p>Visualize trends and get detailed reports on your inventory health.</p>
+                        <span class="hub-link">View Stats <i class="ph ph-arrow-right"></i></span>
+                    </div>
+                    <div class="hub-card" onclick="switchTab('ai-warnings')">
+                        <div class="hub-icon"><i class="ph-duotone ph-robot"></i></div>
+                        <h3>AI Warnings</h3>
+                        <p>Get smart alerts and recommendations for expiring products.</p>
+                        <span class="hub-link">View Warnings <i class="ph ph-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- Inventory Section -->
+                <div id="inventory-section" style="display: none;">
+                    <div class="dash-list" style="position: relative;">
+                        <h3>Your Items <span id="db-status-badge"
+                                style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: var(--safe-light); color: var(--safe); margin-left: 0.5rem;">Auto-Saved
+                                Locally</span>
+                        </h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Manufacturer</th>
+                                        <th>Category</th>
+                                        <th>Batch No.</th>
+                                        <th>Qty</th>
+                                        <th>Expiry Date</th>
+                                        <th>Status</th>
+                                        <th>Act</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventory-tbody">
+                                    <tr>
+                                        <td colspan="8"
+                                            style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                            No items yet. Add one to get started!
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Inventory Tools -->
+                        <div
+                            style="margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center; background: var(--bg-main); padding: 1rem; border-radius: 12px; border: 1px solid var(--secondary-color);">
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0; font-size: 0.9rem;">Inventory Management</h4>
+                                <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted);">Import or export
+                                    your inventory data.</p>
+                            </div>
+                            <input type="file" id="import-inventory-file" accept=".csv" style="display: none;">
+                            <button class="btn btn-outline btn-sm" id="btn-import-inventory">
+                                <i class="ph ph-file-arrow-up"></i> Bulk Import
+                            </button>
+                            <button class="btn btn-outline btn-sm" id="btn-export-inventory">
+                                <i class="ph ph-file-arrow-down"></i> Export Data
+                            </button>
+                            <button class="btn btn-outline btn-sm" id="btn-clear-inventory"
+                                onclick="const m = document.getElementById('confirm-clear-inv-modal'); m.style.display='flex'; setTimeout(() => m.classList.add('active'), 10);"
+                                style="color: var(--danger); border-color: rgba(239, 68, 68, 0.2);">
+                                <i class="ph ph-trash"></i> Clear Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Item Section -->
+                <div id="add-item-section" style="display: none;">
+                    <div class="dash-split" style="max-width: 700px; margin: 0 auto; display: block;">
+                        <div class="glass-panel" style="padding: 2rem;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                <h3 style="margin: 0; color: var(--text-dark);">Add Product</h3>
+                            </div>
+
+                            <form id="add-product-form">
+                                <!-- Barcode Scan Image Preview -->
+                                <div id="scanned-image-preview"
+                                    style="display: none; margin-bottom: 1.5rem; text-align: center;">
+                                    <img id="scanned-img" src="" alt="Product Image"
+                                        style="max-height: 150px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                                    <input type="hidden" id="p-image-url">
+                                    <input type="hidden" id="p-barcode">
+                                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;"
+                                        id="scanned-barcode-text"></div>
+                                </div>
+
+                                <div class="form-group" style="position: relative;">
+                                    <label for="p-name">Product Name *</label>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <input type="text" id="p-name" class="form-control" required
+                                            placeholder="e.g., Milk,Bread" autocomplete="off" style="flex: 1;">
+                                        <button type="button" class="btn btn-outline" id="btn-scan" title="Scan Barcode"
+                                            style="padding: 0.5rem 0.75rem;"><i class="ph ph-barcode"></i></button>
+                                    </div>
+                                    <div id="custom-suggestions" class="suggestions-dropdown"></div>
+                                </div>
+                                <div class="form-group" style="position: relative;">
+                                    <label>Manufacturer</label>
+                                    <input type="text" id="p-mfg-name" placeholder="e.g. Milma,Amul" autocomplete="off">
+                                    <div id="p-mfg-suggestions" class="suggestions-dropdown"></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group half">
+                                        <label>Category</label>
+                                        <select id="p-cat" required>
+                                            <option value="Food">Food</option>
+                                            <option value="Snacks">Snacks</option>
+                                            <option value="Beverage">Beverage</option>
+                                            <option value="Dairy">Dairy</option>
+                                            <option value="Grocery">Grocery</option>
+                                            <option value="Frozen">Frozen</option>
+                                            <option value="Baking">Baking</option>
+                                            <option value="Dessert">Dessert</option>
+                                            <option value="Dry Fruits">Dry Fruits</option>
+                                            <option value="Health">Health</option>
+                                            <option value="Condiment">Condiment</option>
+                                            <option value="Breakfast">Breakfast</option>
+                                            <option value="Confectionery">Confectionery</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group half">
+                                        <label>Quantity</label>
+                                        <input type="number" id="p-qty" placeholder="1" min="1" value="1">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group half">
+                                        <label>MFG Date <small>(Opt)</small></label>
+                                        <input type="date" id="p-mfg">
+                                    </div>
+                                    <div class="form-group half">
+                                        <label>Batch Number <small>(Opt)</small></label>
+                                        <input type="text" id="p-batch" placeholder="e.g. Batch-123">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Expiry Date *</label>
+                                    <input type="date" id="p-exp" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100" id="btn-submit-product">Add to
+                                    Inventory</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Catalog Section -->
+                <div class="dash-split" id="catalog-section" style="display: none;">
+                    <div class="dash-list">
+                        <h3>Product Catalog <span
+                                style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: var(--primary-light); color: var(--primary-color); margin-left: 0.5rem;">Pre-defined
+                                Templates</span></h3>
+
+                        <!-- Catalog Search Bar -->
+                        <div style="position: relative; margin-bottom: 1rem;">
+                            <i class="ph ph-magnifying-glass"
+                                style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1rem; pointer-events: none;"></i>
+                            <input type="text" id="catalog-search"
+                                placeholder="Search by product name or manufacturer..." autocomplete="off"
+                                style="width: 100%; padding: 0.6rem 2.5rem 0.6rem 2.25rem; border-radius: 8px; border: 1px solid var(--secondary-color); background: var(--bg-main); color: white; font-size: 0.875rem; outline: none; box-sizing: border-box; transition: border-color 0.2s;"
+                                onfocus="this.style.borderColor='var(--primary-color)'"
+                                onblur="this.style.borderColor='var(--secondary-color)'">
+                            <button id="catalog-search-clear"
+                                onclick="document.getElementById('catalog-search').value=''; document.getElementById('catalog-search').dispatchEvent(new Event('input'));"
+                                style="display: none; position: absolute; right: 0.6rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1rem; padding: 0; line-height: 1;">
+                                <i class="ph ph-x-circle"></i>
+                            </button>
+                        </div>
+
+                        <div class="table-container" style="max-height: 380px; overflow-y: auto; border-radius: 10px;">
+                            <table>
+                                <thead style="position: sticky; top: 0; z-index: 1; background: var(--bg-card);">
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Manufacturer</th>
+                                        <th>Act</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="catalog-tbody">
+                                    <tr>
+                                        <td colspan="3"
+                                            style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                            No templates yet. Add one to see suggestions!
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="dash-right-col">
+                        <div class="dash-add-form">
+                            <h3 style="margin-bottom: 1rem;">Add to Catalog</h3>
+                            <form id="add-catalog-form">
+                                <div class="form-group">
+                                    <label>Product Name</label>
+                                    <input type="text" id="cat-p-name" placeholder="e.g. Organic Milk"
+                                        autocomplete="off" required>
+                                </div>
+                                <div class="form-group" style="position: relative;">
+                                    <label>Manufacturer</label>
+                                    <input type="text" id="cat-p-mfg" placeholder="e.g. Local Dairy Inc."
+                                        autocomplete="off" required>
+                                    <div id="catalog-mfg-suggestions" class="suggestions-dropdown"></div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Add to Catalog</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Catalog Tools Widget (Horizontal) -->
+                    <div class="catalog-tools-column"
+                        style="grid-column: 1 / -1; margin-top: 0.5rem; display: flex; gap: 1rem; align-items: center; background: var(--bg-main); padding: 1rem 1.5rem; border-radius: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--secondary-color);">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0; font-size: 1rem; color: var(--text-dark);">Catalog Tools</h4>
+                            <p style="margin: 0; font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.2rem;">
+                                Bulk manage your product templates.</p>
+                        </div>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <input type="file" id="import-catalog-file" accept=".csv" style="display: none;">
+                            <button class="btn btn-outline" id="btn-import-catalog"
+                                style="padding: 0.5rem 1rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="ph ph-file-arrow-up" style="font-size: 1.125rem;"></i> Bulk Import
+                            </button>
+                            <button class="btn btn-outline" id="btn-export-catalog"
+                                style="padding: 0.5rem 1rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="ph ph-file-arrow-down" style="font-size: 1.125rem;"></i> Export Data
+                            </button>
+                            <button class="btn btn-outline"
+                                onclick="const m = document.getElementById('confirm-clear-modal'); m.style.display='flex'; setTimeout(() => m.classList.add('active'), 10);"
+                                style="padding: 0.5rem 1rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem; color: var(--danger); border-color: rgba(239, 68, 68, 0.3);">
+                                <i class="ph ph-trash" style="font-size: 1.125rem;"></i> Clear Catalog
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div class="dash-analytics" id="analytics-section"
+                    style="display: none; flex-direction: column; gap: 1.5rem;">
+                    <h3>Inventory Analytics <span
+                            style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: var(--primary-light); color: var(--primary-color); margin-left: 0.5rem;">Live
+                            Data</span></h3>
+
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <!-- Category Breakdown -->
+                        <div class="glass-panel" style="padding: 1.5rem;">
+                            <h4
+                                style="margin-bottom: 1rem; color: var(--text-dark); display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="ph ph-pie-chart"></i> Category Breakdown
+                            </h4>
+                            <div id="analytics-categories" style="display: flex; flex-direction: column; gap: 1rem;">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Expiry Timeline Matrix -->
+                        <div class="glass-panel" style="padding: 1.5rem;">
+                            <h4
+                                style="margin-bottom: 1rem; color: var(--text-dark); display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="ph ph-clock-countdown"></i> Status Overview
+                            </h4>
+                            <div id="analytics-status" style="display: flex; flex-direction: column; gap: 1rem;">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Warnings Section -->
+                <div id="ai-warnings-section" style="display: none; flex-direction: column; gap: 1.5rem;">
+                    <h3>AI Expiry Date Warning System <span
+                            style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: var(--warning-light); color: var(--warning); margin-left: 0.5rem;">Beta</span>
+                    </h3>
+
+                    <!-- AI Expiry Warning System -->
+                    <div class="glass-panel"
+                        style="padding: 1.5rem; border-left: 4px solid var(--warning); background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(239, 68, 68, 0.05));">
+                        <h3
+                            style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0; margin-bottom: 1rem; color: var(--text-dark);">
+                            <i class="ph-fill ph-robot" style="color: var(--warning);"></i> Smart Expiry Analysis
+                        </h3>
+                        <div id="ai-expiry-alerts-container"
+                            style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <!-- Dynamic alerts injected here -->
+                            <div style="font-size: 0.875rem; color: var(--text-muted);">Analyzing inventory...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings-section" style="display: none; flex-direction: column; gap: 1.5rem;">
+                    <h3>Application Settings</h3>
+                    <!-- Settings cards row: Email (left) + Push Notifications (right) -->
+                    <div style="display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap;">
+
+                        <!-- Email Notifications Card -->
+                        <div class="glass-panel" style="padding: 2rem; flex: 1; min-width: 280px;">
+                            <h4
+                                style="margin-top: 0; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-dark);">
+                                <i class="ph ph-envelope-simple"></i> Email Notifications
+                            </h4>
+                            <p
+                                style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 2rem; line-height: 1.5;">
+                                Configure the email address used for receiving AI expiry warnings. The system will send
+                                alerts to your <strong>User Email</strong>.
+                            </p>
+
+
+
+                            <div class="form-group" style="margin-bottom: 2rem;">
+                                <label for="setting-user-email">User Email (Receiver)</label>
+                                <input type="email" id="setting-user-email" class="form-control"
+                                    placeholder="e.g. you@example.com">
+                            </div>
+
+                            <button class="btn btn-primary" id="btn-save-settings"
+                                style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 0.5rem;">
+                                <i class="ph ph-floppy-disk"></i> Save Settings
+                            </button>
+
+                            <div style="height: 1px; background: var(--border-color); margin: 1.5rem 0;"></div>
+
+                            <h4
+                                style="margin-top: 0; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-dark); font-size: 0.95rem;">
+                                <i class="ph ph-paper-plane-tilt" style="color: var(--warning);"></i> Send Expiry Alert
+                                Email
+                            </h4>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                Manually trigger an alert email to the User Email for all products that are expiring
+                                soon or
+                                already expired.
+                            </p>
+                            <button class="btn btn-outline" id="btn-send-alert"
+                                style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 0.5rem; border-color: var(--warning); color: var(--warning);">
+                                <i class="ph ph-envelope-open"></i> Send Alert Email Now
+                            </button>
+                        </div>
+
+                        <!-- Push Notifications Card -->
+                        <div class="glass-panel" style="padding: 2rem; flex: 1; min-width: 280px;">
+                            <h4
+                                style="margin-top: 0; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-dark);">
+                                <i class="ph ph-bell-ringing" style="color: var(--primary-color);"></i> Browser Push
+                                Notifications
+                            </h4>
+                            <p
+                                style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6;">
+                                Enable real OS-level push notifications for expired and soon-to-expire products.
+                                These appear in your system notification tray — even when the tab is in the background.
+                                The backend sends them automatically every morning at <strong>8:00 AM</strong>.
+                            </p>
+
+                            <!-- Push Status Bar -->
+                            <div id="push-status-bar"
+                                style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 8px; background: var(--bg-main); border: 1px solid var(--secondary-color); margin-bottom: 1.25rem; font-size: 0.875rem;">
+                                <div id="push-status-dot"
+                                    style="width: 10px; height: 10px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0; transition: background 0.3s;">
+                                </div>
+                                <span id="push-status-text" style="color: var(--text-muted);">Checking notification
+                                    status...</span>
+                            </div>
+
+                            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                                <button class="btn btn-primary" id="btn-enable-push"
+                                    style="flex: 1; display: flex; justify-content: center; align-items: center; gap: 0.5rem; min-width: 160px;">
+                                    <i class="ph ph-bell-ringing"></i> Enable Push Notifications
+                                </button>
+                                <button class="btn btn-outline" id="btn-test-push"
+                                    style="flex: 1; display: flex; justify-content: center; align-items: center; gap: 0.5rem; min-width: 160px;"
+                                    disabled>
+                                    <i class="ph ph-paper-plane-tilt"></i> Send Test Push Now
+                                </button>
+                            </div>
+
+                            <p
+                                style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; line-height: 1.5;">
+                                <i class="ph ph-info"></i>
+                                Push notifications require this page to be served over <code>http://</code> (e.g. via
+                                Live
+                                Server or the backend's static server).
+                                Opening as a local file (<code>file://</code>) will not work.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Search Results Section -->
+                <div id="search-results-section" style="display: none;">
+                    <div class="dash-list">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3>Search Results for "<span id="search-query-display"></span>"</h3>
+                            <button class="btn btn-outline btn-sm" onclick="switchTab('overview')">Back to
+                                Overview</button>
+                        </div>
+                        <div id="search-results-grid" class="product-grid">
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- Closing dash-main -->
+        </div>
+
+        <!-- Product Detail Modal -->
+        <div class="modal-overlay" id="product-detail-modal" style="display: none;">
+            <div class="modal-content glass-panel" style="max-width: 800px; width: 90%; padding: 2rem;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                    <div>
+                        <h2 id="detail-product-name" style="margin-bottom: 0.25rem;">Product Name</h2>
+                        <p id="detail-product-brand" style="font-size: 1rem; color: var(--primary-color);">
+                            Brand/Company</p>
+                    </div>
+                    <button class="btn-icon" id="close-product-detail"><i class="ph ph-x"></i></button>
+                </div>
+
+                <div class="detail-grid"
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                    <div class="detail-info">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <p id="detail-category" class="detail-val">-</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Expiry Date</label>
+                            <p id="detail-expiry" class="detail-val">-</p>
+                        </div>
+                    </div>
+                    <div class="detail-info">
+                        <div class="form-group">
+                            <label>Batch Number</label>
+                            <p id="detail-batch" class="detail-val">-</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Manufacture Date</label>
+                            <p id="detail-mfg" class="detail-val">-</p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="related-section">
+                    <h4 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="ph-fill ph-circles-three-plus"></i> Related/Similar Products
+                    </h4>
+                    <div id="related-products-grid" class="product-grid mini">
+                        <!-- Related products items will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barcode Scanner Modal -->
+        <div class="modal-overlay" id="scanner-modal" style="display: none;">
+            <div class="modal-content glass-panel" style="max-width: 400px; text-align: center;">
+                <h3 style="margin-top: 0; color: var(--text-dark);">Scan Barcode</h3>
+                <div id="reader" style="width: 100%; border-radius: 8px; overflow: hidden; margin: 1rem 0;"></div>
+                <p id="scanner-status" style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    Initializing camera...</p>
+
+                <div
+                    style="position: relative; margin-bottom: 1rem; border-top: 1px solid var(--secondary-color); padding-top: 1rem;">
+                    <label for="manual-barcode-input"
+                        style="font-size: 0.8125rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem; text-align: left;">Or
+                        enter barcode manually:</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="manual-barcode-input" class="form-control"
+                            placeholder="e.g. 5449000000996" style="flex: 1;">
+                        <button type="button" class="btn btn-primary" id="btn-manual-lookup">Lookup</button>
+                    </div>
+                </div>
+
+                <div id="scanner-spinner"
+                    style="display: none; align-items: center; justify-content: center; margin: 1rem 0; color: var(--primary-color);">
+                    <div class="spinner"></div> Fetching data...
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button class="btn btn-outline" id="close-scanner">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Alert Simulation -->
+        <div id="toast-container" class="toast-container"></div>
+
+        <!-- Custom Confirmation Modal for Clear Catalog -->
+        <div class="modal-overlay" id="confirm-clear-modal"
+            style="display: none; align-items: center; justify-content: center; z-index: 1000;">
+            <div class="modal-content glass-panel" style="max-width: 400px; text-align: center; padding: 2.5rem 2rem;">
+                <div
+                    style="width: 60px; height: 60px; background: var(--danger-light); color: var(--danger); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.5rem;">
+                    <i class="ph ph-warning-circle"></i>
+                </div>
+                <h3 style="margin-top: 0; margin-bottom: 1rem; color: var(--text-dark); font-size: 1.25rem;">Clear
+                    Entire Catalog?</h3>
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 2rem; line-height: 1.5;">
+                    This action will permanently wipe all pre-defined product templates you have created. Are you
+                    absolutely sure you want to proceed?
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button class="btn btn-outline" id="btn-cancel-clear" style="flex: 1;">Cancel</button>
+                    <button class="btn btn-primary" id="btn-confirm-clear"
+                        style="flex: 1; background: var(--danger); border-color: var(--danger);">Yes, Clear It</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Confirmation Modal for Clear Inventory -->
+        <div class="modal-overlay" id="confirm-clear-inv-modal"
+            style="display: none; align-items: center; justify-content: center; z-index: 1000;">
+            <div class="modal-content glass-panel" style="max-width: 400px; text-align: center; padding: 2.5rem 2rem;">
+                <div
+                    style="width: 60px; height: 60px; background: var(--danger-light); color: var(--danger); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.5rem;">
+                    <i class="ph ph-warning-octagon"></i>
+                </div>
+                <h3 style="margin-top: 0; margin-bottom: 1rem; color: var(--text-dark); font-size: 1.25rem;">Clear
+                    All Inventory Data?</h3>
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 2rem; line-height: 1.5;">
+                    This action will permanently delete all items in your current inventory database. This cannot be
+                    undone. Are you absolutely sure?
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button class="btn btn-outline" id="btn-cancel-inv-clear" style="flex: 1;">Cancel</button>
+                    <button class="btn btn-primary" id="btn-confirm-inv-clear"
+                        style="flex: 1; background: var(--danger); border-color: var(--danger);">Yes, Clear
+                        Data</button>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <script src="theme.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+
+</html>
